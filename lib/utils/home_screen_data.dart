@@ -1,7 +1,7 @@
 class RoleScreenData{
 
   static const List<String> imagePath = [
-    'asstes/images/event.png',
+    'assets/images/event.png',
 
                                 //below data is to be updated
     // prospectiveStudentImage,
