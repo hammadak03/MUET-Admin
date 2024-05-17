@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:muet_app_admin/screens/home_screen.dart';
+import 'package:muet_app_admin/screens/update_events_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
       ),
-      home: const HomeScreen(),
+      home: UpdateEventsScreen(),
     );
   }
 }
