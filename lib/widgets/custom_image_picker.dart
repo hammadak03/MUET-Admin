@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 
 class CustomImagePicker extends StatefulWidget {
   final XFile? initialImage;
-  final Future<void> Function() onImagePicked;
+  final Future<XFile?> Function() onImagePicked;
 
   const CustomImagePicker({
     Key? key,
@@ -26,9 +26,11 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
   }
 
   Future<void> _pickImage() async {
-    await widget.onImagePicked();
+    final pickedFile = await widget.onImagePicked();
     setState(() {
-      _imageUpload = widget.initialImage; // Update local state when a new image is picked
+      if (pickedFile != null) {
+        _imageUpload = pickedFile; // Directly update the state with the picked image
+      }
     });
   }
 

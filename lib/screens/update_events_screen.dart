@@ -26,16 +26,12 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
     _descriptionController.dispose();
   }
 
-  Future<void> _pickImage() async {
+  Future<XFile?> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
     setState(() {
-      if (pickedFile != null) {
-        _image = pickedFile;
-      } else {
-        print('No image selected.');
-      }
+      _image = pickedFile;
     });
+    return pickedFile;
   }
 
   @override
