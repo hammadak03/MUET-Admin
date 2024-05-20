@@ -62,7 +62,7 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
             height: 200,
           ),
         )
-            : Center(
+            : const Center(
           child: Icon(
             Icons.add_photo_alternate_rounded,
             size: 40.0,

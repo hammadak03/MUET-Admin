@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1023952059564",
+    "project_id": "muet-offical-cbc41",
+    "storage_bucket": "muet-offical-cbc41.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1023952059564:android:05ab908f99f06caed8b309",
+        "android_client_info": {
+          "package_name": "com.example.muet_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3vxDlpdcOtNX48siIy2YB6k-SPYvI0kU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1023952059564:android:8eb9a2c9c12537f3d8b309",
+        "android_client_info": {
+          "package_name": "com.muet.muet_app_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3vxDlpdcOtNX48siIy2YB6k-SPYvI0kU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
