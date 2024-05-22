@@ -18,6 +18,7 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  DateTime? _selectedDate;
 
   @override
   void dispose() {
@@ -32,6 +33,20 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
       _image = pickedFile;
     });
     return pickedFile;
+  }
+
+  Future<void> _pickDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null && pickedDate != DateTime.now()) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
   }
 
   @override
@@ -52,16 +67,41 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
                       initialImage: _image,
                       onImagePicked: _pickImage,
                     ),
-                    const SizedBox(height: 20,),
+                    SizedBox(height: ScreenUtils.height(context) * 0.02,),
                     CustomTextField(
-                        hintText: "Event Title", controller: _titleController),
+                      hintText: "Event Title",
+                      controller: _titleController,
+                    ),
                     SizedBox(
-                      height: ScreenUtils.height(context) * 0.03,
+                      height: ScreenUtils.height(context) * 0.02,
                     ),
                     CustomTextField(
-                        hintText: "Event Description", controller: _descriptionController),
+                      hintText: "Event Description",
+                      controller: _descriptionController,
+                    ),
                     SizedBox(
-                      height: ScreenUtils.height(context) * 0.03,
+                      height: ScreenUtils.height(context) * 0.02,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _pickDate(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: backgroundColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 5,
+                      ),
+                      child: const Icon(
+                        Icons.calendar_today,
+                        size: 24,
+                        color: textColor,
+                      ),
+                    ),
+                    SizedBox(
+                      height: ScreenUtils.height(context) * 0.02,
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -70,7 +110,9 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: darkBlueColor,
                         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        elevation: 5,
                       ),
+
                       child: const Text('Update Events', style: TextStyle(color: Colors.white),),
                     ),
                   ],
