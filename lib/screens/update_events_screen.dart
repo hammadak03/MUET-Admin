@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 import '../utils/colors.dart';
 import '../utils/screen_utils.dart';
 import '../widgets/custom_textfield.dart';
@@ -22,9 +25,9 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _titleController.dispose();
     _descriptionController.dispose();
+    super.dispose();
   }
 
   Future<XFile?> _pickImage() async {
@@ -49,6 +52,42 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
     }
   }
 
+  Future<void> _uploadEvent() async {
+    if (_titleController.text.isEmpty ||
+        _descriptionController.text.isEmpty ||
+        _selectedDate == null ||
+        _image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields and select an image')),
+      );
+      return;
+    }
+
+    try {
+      // Upload image to Firebase Storage
+      final storageRef = FirebaseStorage.instance.ref();
+      final imageRef = storageRef.child('events/${_image!.name}');
+      await imageRef.putFile(File(_image!.path));
+      final imageUrl = await imageRef.getDownloadURL();
+
+      // Upload event data to Firestore
+      await FirebaseFirestore.instance.collection('events').add({
+        'title': _titleController.text,
+        'description': _descriptionController.text,
+        'date': _selectedDate!.toIso8601String(),
+        'imageUrl': imageUrl,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Event updated successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update event: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,64 +97,62 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
           children: [
             CustomBackground(
               title: 'Update Events',
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: ScreenUtils.width(context) * 0.05),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CustomImagePicker(
-                      initialImage: _image,
-                      onImagePicked: _pickImage,
-                    ),
-                    SizedBox(height: ScreenUtils.height(context) * 0.02,),
-                    CustomTextField(
-                      hintText: "Event Title",
-                      controller: _titleController,
-                    ),
-                    SizedBox(
-                      height: ScreenUtils.height(context) * 0.02,
-                    ),
-                    CustomTextField(
-                      hintText: "Event Description",
-                      controller: _descriptionController,
-                    ),
-                    SizedBox(
-                      height: ScreenUtils.height(context) * 0.02,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _pickDate(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: backgroundColor,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: ScreenUtils.width(context) * 0.05),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CustomImagePicker(
+                        initialImage: _image,
+                        onImagePicked: _pickImage,
+                      ),
+                      SizedBox(height: ScreenUtils.height(context) * 0.02,),
+                      CustomTextField(
+                        hintText: "Event Title",
+                        controller: _titleController,
+                      ),
+                      SizedBox(
+                        height: ScreenUtils.height(context) * 0.02,
+                      ),
+                      CustomTextField(
+                        hintText: "Event Description",
+                        controller: _descriptionController,
+                      ),
+                      SizedBox(
+                        height: ScreenUtils.height(context) * 0.02,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          _pickDate(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: backgroundColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 5,
                         ),
-                        elevation: 5,
+                        child: const Icon(
+                          Icons.calendar_today,
+                          size: 24,
+                          color: Colors.black,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.calendar_today,
-                        size: 24,
-                        color: textColor,
+                      SizedBox(
+                        height: ScreenUtils.height(context) * 0.02,
                       ),
-                    ),
-                    SizedBox(
-                      height: ScreenUtils.height(context) * 0.02,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle form submission
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: darkBlueColor,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                        elevation: 5,
+                      ElevatedButton(
+                        onPressed: _uploadEvent,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: darkBlueColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        ),
+                        child: const Text('Update Events', style: TextStyle(color: Colors.white),),
                       ),
-
-                      child: const Text('Update Events', style: TextStyle(color: Colors.white),),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
