@@ -1,24 +1,16 @@
-class RoleScreenData{
-
+class RoleScreenData {
   static const List<String> imagePath = [
     'assets/images/event.png',
-
-                                //below data is to be updated
-    // prospectiveStudentImage,
-    // alumniImage,
-    // facultyImage,
-    // staffImage,
-    // visitorsImage
+    // Add more image paths here if needed
   ];
 
   static const List<String> names = [
-    "Update Events",
+    'Update Events',
+    // Add more names here if needed
+  ];
 
-                                  //below data is to be updated
-    // "Prospective Student",
-    // "Alumni",
-    // "Faculty",
-    // "Staff",
-    // "Visitors/Guests"
+  static const List<String> routes = [
+    '/update-events',
+    // Add more routes here if needed
   ];
 }

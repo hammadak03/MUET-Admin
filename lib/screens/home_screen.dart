@@ -65,10 +65,16 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const Expanded(
-                            child: CustomGridView(
-                              names: RoleScreenData.names,
-                              imagePath: RoleScreenData.imagePath,
-                            ),
+                          child: CustomGridView(
+                            names: RoleScreenData.names,
+                            imagePath: RoleScreenData.imagePath,
+                          /*Steps to add more GridViewCards
+                            1. Update RoleScreenData: Add new event image path, name, and route.
+                            2. Define Route in main.dart: Add new route in the route table.
+                            3. Create New Event Screen: Create a new screen for the event.
+                            4. Verify Changes: Ensure HomeScreen and CustomGridView are correctly configured.
+                            By following these steps, you can add new items to the grid and ensure they navigate to the correct screens. */
+                          ),
                         ),
                       ],
                     ),

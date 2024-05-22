@@ -39,41 +39,55 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
     return Scaffold(
       backgroundColor: appBarColor,
       body: SafeArea(
-        child: CustomBackground(
-          title: 'Update Events',
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: ScreenUtils.width(context) * 0.05),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                CustomImagePicker(
-                  initialImage: _image,
-                  onImagePicked: _pickImage,
+        child: Stack(
+          children: [
+            CustomBackground(
+              title: 'Update Events',
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: ScreenUtils.width(context) * 0.05),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CustomImagePicker(
+                      initialImage: _image,
+                      onImagePicked: _pickImage,
+                    ),
+                    const SizedBox(height: 20,),
+                    CustomTextField(
+                        hintText: "Event Title", controller: _titleController),
+                    SizedBox(
+                      height: ScreenUtils.height(context) * 0.03,
+                    ),
+                    CustomTextField(
+                        hintText: "Event Description", controller: _descriptionController),
+                    SizedBox(
+                      height: ScreenUtils.height(context) * 0.03,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle form submission
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: darkBlueColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      ),
+                      child: const Text('Update Events', style: TextStyle(color: Colors.white),),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 20,),
-                CustomTextField(
-                    hintText: "Event Title", controller: _titleController),
-                SizedBox(
-                  height: ScreenUtils.height(context) * 0.03,
-                ),
-                CustomTextField(
-                    hintText: "Event Description", controller: _descriptionController),
-                SizedBox(
-                  height: ScreenUtils.height(context) * 0.03,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle form submission
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: darkBlueColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  ),
-                  child: const Text('Update Events', style: TextStyle(color: Colors.white),),
-                ),
-              ],
+              ),
             ),
-          ),
+            Positioned(
+              top: 10.0,
+              left: 10.0,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

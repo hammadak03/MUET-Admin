@@ -1,6 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:muet_app_admin/screens/update_events_screen.dart';
 import '../controller/role_screen_controller.dart';
+import '../utils/home_screen_data.dart';
 import '../utils/screen_utils.dart';
 import 'grid_view_card.dart';
 
@@ -20,18 +22,15 @@ class CustomGridView extends StatelessWidget {
     this.onTap,
     double? heightValue,
     double? widthValue,
-  })  : heightValue =
-      heightValue ?? 0.05, // Set default value if heightValue is null
-        widthValue =
-            widthValue ?? 0.127, // Set default value if widthValue is null
+  })  : heightValue = heightValue ?? 0.05, // Set default value if heightValue is null
+        widthValue = widthValue ?? 0.127, // Set default value if widthValue is null
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(RoleScreenController());
     return Padding(
-      padding:
-      EdgeInsets.symmetric(horizontal: ScreenUtils.height(context) * 0.040),
+      padding: EdgeInsets.symmetric(horizontal: ScreenUtils.height(context) * 0.040),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -41,22 +40,19 @@ class CustomGridView extends StatelessWidget {
           mainAxisSpacing: ScreenUtils.height(context) * 0.038,
           mainAxisExtent: ScreenUtils.height(context) * 0.154,
         ),
-        itemCount:
-        names?.isEmpty ?? true ? (imagePath?.length ?? 0) : names!.length,
+        itemCount: names?.isEmpty ?? true ? (imagePath?.length ?? 0) : names!.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, 'sign_in_screen');
-              controller.selectRole(index);
-            } ,
+              Navigator.of(context).pushNamed(RoleScreenData.routes[index]);
+            },
             child: GridViewCard(
-              heightValue: heightValue, widthValue: widthValue,
+              heightValue: heightValue,
+              widthValue: widthValue,
               imagePath: (imagePath == null || imagePath!.isEmpty)
                   ? networkImage![index]
                   : imagePath![index], // Pass the image path to the widget
-              name: (names != null && names!.isNotEmpty)
-                  ? names![index]
-                  : null, // Conditionally pass the name
+              name: (names != null && names!.isNotEmpty) ? names![index] : null, // Conditionally pass the name
             ),
           );
         },
@@ -64,4 +60,3 @@ class CustomGridView extends StatelessWidget {
     );
   }
 }
-
