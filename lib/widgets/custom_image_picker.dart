@@ -13,10 +13,10 @@ class CustomImagePicker extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CustomImagePickerState createState() => _CustomImagePickerState();
+  CustomImagePickerState createState() => CustomImagePickerState();
 }
 
-class _CustomImagePickerState extends State<CustomImagePicker> {
+class CustomImagePickerState extends State<CustomImagePicker> {
   XFile? _imageUpload;
 
   @override
@@ -29,8 +29,15 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
     final pickedFile = await widget.onImagePicked();
     setState(() {
       if (pickedFile != null) {
-        _imageUpload = pickedFile; // Directly update the state with the picked image
+        _imageUpload = pickedFile;
+        print('Image selected');
       }
+    });
+  }
+
+  void resetImage() {
+    setState(() {
+      _imageUpload = null;
     });
   }
 
@@ -43,7 +50,7 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
         height: 200,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: const [
             BoxShadow(
               color: Colors.black26,

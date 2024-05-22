@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:io';
 import '../utils/colors.dart';
 import '../utils/screen_utils.dart';
+import '../utils/image_picker_util.dart';
+import '../utils/date_picker_util.dart';
+import '../utils/firebase_util.dart';
 import '../widgets/custom_textfield.dart';
 import '../widgets/custom_image_picker.dart';
 import '../widgets/custom_background.dart';
+import '../widgets/loading_dialog.dart';
 
 class UpdateEventsScreen extends StatefulWidget {
   const UpdateEventsScreen({super.key});
@@ -18,10 +19,10 @@ class UpdateEventsScreen extends StatefulWidget {
 
 class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
   XFile? _image;
-  final ImagePicker _picker = ImagePicker();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   DateTime? _selectedDate;
+  final GlobalKey<CustomImagePickerState> _imagePickerKey = GlobalKey<CustomImagePickerState>();
 
   @override
   void dispose() {
@@ -30,26 +31,14 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
     super.dispose();
   }
 
-  Future<XFile?> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  void _resetState() {
     setState(() {
-      _image = pickedFile;
+      _titleController.clear();
+      _descriptionController.clear();
+      _image = null;
+      _selectedDate = null;
     });
-    return pickedFile;
-  }
-
-  Future<void> _pickDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (pickedDate != null && pickedDate != DateTime.now()) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    }
+    _imagePickerKey.currentState?.resetImage();
   }
 
   Future<void> _uploadEvent() async {
@@ -57,35 +46,30 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
         _descriptionController.text.isEmpty ||
         _selectedDate == null ||
         _image == null) {
+      String errorMessage = 'Please fill all fields and select an image.\n';
+      if (_titleController.text.isEmpty) errorMessage += 'Title is empty.\n';
+      if (_descriptionController.text.isEmpty) errorMessage += 'Description is empty.\n';
+      if (_selectedDate == null) errorMessage += 'Date is not selected.\n';
+      if (_image == null) errorMessage += 'Image is not selected.\n';
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields and select an image')),
+        SnackBar(content: Text(errorMessage)),
       );
       return;
     }
 
-    try {
-      // Upload image to Firebase Storage
-      final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child('events/${_image!.name}');
-      await imageRef.putFile(File(_image!.path));
-      final imageUrl = await imageRef.getDownloadURL();
+    LoadingDialog.show(context);
 
-      // Upload event data to Firestore
-      await FirebaseFirestore.instance.collection('events').add({
-        'title': _titleController.text,
-        'description': _descriptionController.text,
-        'date': _selectedDate!.toIso8601String(),
-        'imageUrl': imageUrl,
-      });
+    await FirebaseUtil.uploadEvent(
+      context: context,
+      image: _image,
+      titleController: _titleController,
+      descriptionController: _descriptionController,
+      selectedDate: _selectedDate,
+      resetState: _resetState,
+    );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Event updated successfully')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update event: $e')),
-      );
-    }
+    LoadingDialog.hide(context);
   }
 
   @override
@@ -104,8 +88,15 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       CustomImagePicker(
+                        key: _imagePickerKey,
                         initialImage: _image,
-                        onImagePicked: _pickImage,
+                        onImagePicked: () async {
+                          final pickedFile = await ImagePickerUtil.pickImage();
+                          setState(() {
+                            _image = pickedFile;
+                          });
+                          return pickedFile;
+                        },
                       ),
                       SizedBox(height: ScreenUtils.height(context) * 0.02,),
                       CustomTextField(
@@ -124,7 +115,13 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          _pickDate(context);
+                          DatePickerUtil.pickDate(context).then((pickedDate) {
+                            if (pickedDate != null) {
+                              setState(() {
+                                _selectedDate = pickedDate;
+                              });
+                            }
+                          });
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: backgroundColor,
