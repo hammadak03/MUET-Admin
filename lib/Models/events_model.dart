@@ -38,5 +38,5 @@ class EventsModel {
         'buttonText': buttonText,
         'link': link,
         'imageUrl': imageUrl
-      };
+  };
 }
