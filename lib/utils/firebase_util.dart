@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:muet_app_admin/Models/events_model.dart';
+import 'package:muet_app_admin/database/events_handler.dart';
 
 class FirebaseUtil {
   static Future<void> uploadEvent({
@@ -20,14 +21,12 @@ class FirebaseUtil {
       await imageRef.putFile(File(image.path));
       final imageUrl = await imageRef.getDownloadURL();
 
-      // Upload event data to Firestore
-      await FirebaseFirestore.instance.collection('events').add({
-        'title': titleController.text,
-        'description': descriptionController.text,
-        'date': selectedDate!.toIso8601String(),
-        'imageUrl': imageUrl,
-      });
-
+      EventHandler.createEvent(EventsModel(
+        title: titleController.text,
+        description: descriptionController.text,
+        imageUrl: imageUrl,
+        date: selectedDate!.toIso8601String(),
+      ));
       resetState();
 
       ScaffoldMessenger.of(context).showSnackBar(

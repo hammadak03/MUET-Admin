@@ -22,7 +22,8 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   DateTime? _selectedDate;
-  final GlobalKey<CustomImagePickerState> _imagePickerKey = GlobalKey<CustomImagePickerState>();
+  final GlobalKey<CustomImagePickerState> _imagePickerKey =
+      GlobalKey<CustomImagePickerState>();
 
   @override
   void dispose() {
@@ -48,7 +49,9 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
         _image == null) {
       String errorMessage = 'Please fill all fields and select an image.\n';
       if (_titleController.text.isEmpty) errorMessage += 'Title is empty.\n';
-      if (_descriptionController.text.isEmpty) errorMessage += 'Description is empty.\n';
+      if (_descriptionController.text.isEmpty) {
+        errorMessage += 'Description is empty.\n';
+      }
       if (_selectedDate == null) errorMessage += 'Date is not selected.\n';
       if (_image == null) errorMessage += 'Image is not selected.\n';
 
@@ -83,7 +86,8 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
               title: 'Update Events',
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: ScreenUtils.width(context) * 0.05),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: ScreenUtils.width(context) * 0.05),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -98,7 +102,9 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
                           return pickedFile;
                         },
                       ),
-                      SizedBox(height: ScreenUtils.height(context) * 0.02,),
+                      SizedBox(
+                        height: ScreenUtils.height(context) * 0.02,
+                      ),
                       CustomTextField(
                         hintText: "Event Title",
                         controller: _titleController,
@@ -125,7 +131,8 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: backgroundColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -144,9 +151,13 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
                         onPressed: _uploadEvent,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: darkBlueColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32, vertical: 12),
                         ),
-                        child: const Text('Update Events', style: TextStyle(color: Colors.white),),
+                        child: const Text(
+                          'Update Events',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
