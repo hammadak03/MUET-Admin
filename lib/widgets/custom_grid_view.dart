@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:muet_app_admin/screens/update_events_screen.dart';
+import 'package:muet_app_admin/screens/add_events_screen.dart';
 import '../controller/role_screen_controller.dart';
 import '../utils/home_screen_data.dart';
 import '../utils/screen_utils.dart';

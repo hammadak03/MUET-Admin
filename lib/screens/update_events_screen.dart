@@ -1,79 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import '../Models/events_model.dart';
+import '../database/events_handler.dart';
 import '../utils/colors.dart';
 import '../utils/screen_utils.dart';
-import '../utils/image_picker_util.dart';
-import '../utils/date_picker_util.dart';
-import '../utils/firebase_util.dart';
-import '../widgets/custom_textfield.dart';
-import '../widgets/custom_image_picker.dart';
 import '../widgets/custom_background.dart';
-import '../widgets/loading_dialog.dart';
+import 'add_events_screen.dart'; // Import the screen you want to navigate to
 
-class UpdateEventsScreen extends StatefulWidget {
-  const UpdateEventsScreen({super.key});
-
-  @override
-  State<UpdateEventsScreen> createState() => _UpdateEventsScreenState();
-}
-
-class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
-  XFile? _image;
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  DateTime? _selectedDate;
-  final GlobalKey<CustomImagePickerState> _imagePickerKey =
-      GlobalKey<CustomImagePickerState>();
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-
-  void _resetState() {
-    setState(() {
-      _titleController.clear();
-      _descriptionController.clear();
-      _image = null;
-      _selectedDate = null;
-    });
-    _imagePickerKey.currentState?.resetImage();
-  }
-
-  Future<void> _uploadEvent() async {
-    if (_titleController.text.isEmpty ||
-        _descriptionController.text.isEmpty ||
-        _selectedDate == null ||
-        _image == null) {
-      String errorMessage = 'Please fill all fields and select an image.\n';
-      if (_titleController.text.isEmpty) errorMessage += 'Title is empty.\n';
-      if (_descriptionController.text.isEmpty) {
-        errorMessage += 'Description is empty.\n';
-      }
-      if (_selectedDate == null) errorMessage += 'Date is not selected.\n';
-      if (_image == null) errorMessage += 'Image is not selected.\n';
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-      return;
-    }
-
-    LoadingDialog.show(context);
-
-    await FirebaseUtil.uploadEvent(
-      context: context,
-      image: _image,
-      titleController: _titleController,
-      descriptionController: _descriptionController,
-      selectedDate: _selectedDate,
-      resetState: _resetState,
-    );
-
-    LoadingDialog.hide(context);
-  }
+class UpdateEvents extends StatelessWidget {
+  const UpdateEvents({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -87,77 +22,174 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: ScreenUtils.width(context) * 0.05),
+                    horizontal: ScreenUtils.width(context) * 0.05,
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      CustomImagePicker(
-                        key: _imagePickerKey,
-                        initialImage: _image,
-                        onImagePicked: () async {
-                          final pickedFile = await ImagePickerUtil.pickImage();
-                          setState(() {
-                            _image = pickedFile;
-                          });
-                          return pickedFile;
+                      StreamBuilder<List<EventsModel>>(
+                        stream: EventHandler.getEvents(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Center(
+                                child: Text('No events available'));
+                          } else {
+                            final events = snapshot.data!;
+                            return ListView.builder(
+                              shrinkWrap:
+                                  true, // Ensure the ListView takes the minimum height required
+                              physics:
+                                  const NeverScrollableScrollPhysics(), // Prevent ListView from scrolling independently
+                              itemCount: events.length,
+                              itemBuilder: (context, index) {
+                                final event = events[index];
+
+                                // Parse the date string into a DateTime object
+                                DateTime eventDate =
+                                    DateTime.tryParse(event.date ?? '') ??
+                                        DateTime.now();
+
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: ListTile(
+                                    leading: Container(
+                                      width: ScreenUtils.width(context) * 0.25,
+                                      height: ScreenUtils.width(context) * 0.25,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        color: Colors.white60,
+                                      ),
+                                      child: event.imageUrl != null
+                                          ? ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              child: Image.network(
+                                                event.imageUrl!,
+                                                fit: BoxFit.fill,
+                                                loadingBuilder:
+                                                    (BuildContext context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child;
+                                                  } else {
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                (loadingProgress
+                                                                        .expectedTotalBytes ??
+                                                                    1)
+                                                            : null,
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            )
+                                          : const Icon(Icons.event),
+                                    ),
+                                    title: Text(
+                                      event.title ?? "No Title",
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.black),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          event.description ?? "No Description",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black54),
+                                        ),
+                                        const SizedBox(height: 5.0),
+                                        Text(
+                                          DateFormat.yMMMd().format(eventDate),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5.0),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // Handle button press, e.g., navigate to a link
+                                            if (event.link != null) {
+                                              // Navigate to the link
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: darkBlueColor,
+                                          ),
+                                          child: Text(
+                                            event.buttonText ?? "Button",
+                                            style: const TextStyle(
+                                                color: whiteColor),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red),
+                                      onPressed: () async {
+                                        // Show a confirmation dialog before deleting
+                                        final shouldDelete =
+                                            await showDialog<bool>(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: const Text('Delete Event'),
+                                              content: const Text(
+                                                  'Are you sure you want to delete this event?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(false),
+                                                  child: const Text('Cancel'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(true),
+                                                  child: const Text('Delete'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+
+                                        // If the user confirmed, delete the event
+                                        if (shouldDelete == true &&
+                                            event.id != null) {
+                                          await EventHandler.deleteEvent(
+                                              event.id!);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         },
-                      ),
-                      SizedBox(
-                        height: ScreenUtils.height(context) * 0.02,
-                      ),
-                      CustomTextField(
-                        hintText: "Event Title",
-                        controller: _titleController,
-                      ),
-                      SizedBox(
-                        height: ScreenUtils.height(context) * 0.02,
-                      ),
-                      CustomTextField(
-                        hintText: "Event Description",
-                        controller: _descriptionController,
-                      ),
-                      SizedBox(
-                        height: ScreenUtils.height(context) * 0.02,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          DatePickerUtil.pickDate(context).then((pickedDate) {
-                            if (pickedDate != null) {
-                              setState(() {
-                                _selectedDate = pickedDate;
-                              });
-                            }
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: backgroundColor,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 5,
-                        ),
-                        child: const Icon(
-                          Icons.calendar_today,
-                          size: 24,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(
-                        height: ScreenUtils.height(context) * 0.02,
-                      ),
-                      ElevatedButton(
-                        onPressed: _uploadEvent,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: darkBlueColor,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 12),
-                        ),
-                        child: const Text(
-                          'Update Events',
-                          style: TextStyle(color: Colors.white),
-                        ),
                       ),
                     ],
                   ),
@@ -177,6 +209,17 @@ class _UpdateEventsScreenState extends State<UpdateEventsScreen> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddEventsScreen()),
+          );
+        },
+        backgroundColor: darkBlueColor,
+        child: const Icon(Icons.add, color: whiteColor),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

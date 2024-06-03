@@ -11,6 +11,8 @@ class FirebaseUtil {
     required XFile? image,
     required TextEditingController titleController,
     required TextEditingController descriptionController,
+    required TextEditingController linkController,
+    required TextEditingController buttonTextController,
     required DateTime? selectedDate,
     required VoidCallback resetState,
   }) async {
@@ -24,11 +26,12 @@ class FirebaseUtil {
       EventHandler.createEvent(EventsModel(
         title: titleController.text,
         description: descriptionController.text,
+        link: linkController.text,
+        buttonText: buttonTextController.text,
         imageUrl: imageUrl,
         date: selectedDate!.toIso8601String(),
       ));
       resetState();
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Event updated successfully')),
       );

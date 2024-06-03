@@ -5,7 +5,7 @@ class CustomBackground extends StatelessWidget {
   final Widget child;
   final String title;
 
-  const CustomBackground({Key? key, required this.child, required this.title}) : super(key: key);
+  const CustomBackground({super.key, required this.child, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,8 @@ class CustomBackground extends StatelessWidget {
         Column(
           children: [
             Padding(
-              padding: EdgeInsets.only(
-                  top: height * 0.059, bottom: height * 0.035),
+              padding:
+                  EdgeInsets.only(top: height * 0.059, bottom: height * 0.035),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: SizedBox(

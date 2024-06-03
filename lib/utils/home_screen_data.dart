@@ -11,6 +11,7 @@ class RoleScreenData {
 
   static const List<String> routes = [
     '/update-events',
+    '/add-events',
     // Add more routes here if needed
   ];
 }
