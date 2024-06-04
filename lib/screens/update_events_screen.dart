@@ -105,7 +105,7 @@ class UpdateEvents extends StatelessWidget {
                                     ),
                                     title: Text(
                                       event.title ?? "No Title",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 16, color: Colors.black),
                                     ),
                                     subtitle: Column(
@@ -114,14 +114,14 @@ class UpdateEvents extends StatelessWidget {
                                       children: [
                                         Text(
                                           event.description ?? "No Description",
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontSize: 12,
                                               color: Colors.black54),
                                         ),
                                         const SizedBox(height: 5.0),
                                         Text(
                                           DateFormat.yMMMd().format(eventDate),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 12,
                                             color: Colors.black,
                                           ),
