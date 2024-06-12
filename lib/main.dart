@@ -36,8 +36,10 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const HomeScreen(),
+
           '/update-events': (context) => const UpdateEvents(),
           '/add-events': (context) => const AddEventsScreen(),
+          '/update-events': (context) => const UpdateEvents(),
         }   );
       }
 }
