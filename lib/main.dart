@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:muet_app_admin/screens/home_screen.dart';
 import 'package:muet_app_admin/screens/add_events_screen.dart';
 import 'package:muet_app_admin/screens/update_events_screen.dart';
+import 'package:muet_app_admin/screens/update_news_screen.dart';
 
 
 Future<void> main() async {
@@ -38,8 +39,8 @@ class MyApp extends StatelessWidget {
           '/': (context) => const HomeScreen(),
 
           '/update-events': (context) => const UpdateEvents(),
+          '/update-news': (context) => const UpdateNewsScreen(),
           '/add-events': (context) => const AddEventsScreen(),
-          '/update-events': (context) => const UpdateEvents(),
         }   );
       }
 }
