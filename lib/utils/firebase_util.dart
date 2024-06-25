@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:muet_app_admin/Models/events_model.dart';
+import 'package:muet_app_admin/Models/news_model.dart';
 import 'package:muet_app_admin/database/events_handler.dart';
+import 'package:muet_app_admin/database/news_handler.dart';
 
 class FirebaseUtil {
   static Future<void> uploadEvent({
@@ -38,6 +40,40 @@ class FirebaseUtil {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to update event: $e')),
+      );
+    }
+  }
+
+  static Future<void> uploadNews({
+    required BuildContext context,
+    required XFile? image,
+    required TextEditingController titleController,
+    required TextEditingController descriptionController,
+    required TextEditingController linkController,
+    required DateTime? selectedDate,
+    required VoidCallback resetState,
+  }) async {
+    try {
+      // Upload image to Firebase Storage
+      final storageRef = FirebaseStorage.instance.ref();
+      final imageRef = storageRef.child('news/${image!.name}');
+      await imageRef.putFile(File(image.path));
+      final imageUrl = await imageRef.getDownloadURL();
+
+      NewsHandler.createNews(NewsModel(
+        title: titleController.text,
+        description: descriptionController.text,
+        link: linkController.text,
+        img: imageUrl,
+        date: selectedDate!.toIso8601String(),
+      ));
+      resetState();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('News updated successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update News: $e')),
       );
     }
   }

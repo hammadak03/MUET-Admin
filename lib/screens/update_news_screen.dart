@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:muet_app_admin/screens/add_news_screen.dart';
 import '../Models/news_model.dart';
 import '../database/news_handler.dart';
 import '../utils/colors.dart';
@@ -67,17 +68,17 @@ class UpdateNewsScreen extends StatelessWidget {
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => const AddNewsScreen()),
-      //     );
-      //   },
-      //   backgroundColor: darkBlueColor,
-      //   child: const Icon(Icons.add, color: whiteColor),
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddNewsScreen()),
+          );
+        },
+        backgroundColor: darkBlueColor,
+        child: const Icon(Icons.add, color: whiteColor),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

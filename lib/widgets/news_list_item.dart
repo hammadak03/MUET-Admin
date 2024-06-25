@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:muet_app_admin/widgets/url_controller.dart';
 import '../Models/news_model.dart';
 import '../database/news_handler.dart';
 import '../utils/colors.dart';
@@ -59,13 +60,13 @@ class NewsListItem extends StatelessWidget {
               onPressed: () {
                 // Handle button press, e.g., navigate to a link
                 if (news.link != null) {
-                  // Navigate to the link
+                  urlNewsLauncher(news.link!);
                 }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: darkBlueColor,
               ),
-              child: Text(news.link ?? "Read More", style: const TextStyle(color: whiteColor)),
+              child: const Text("Read More", style: const TextStyle(color: whiteColor)),
             ),
           ],
         ),
