@@ -37,7 +37,7 @@ A Flutter-based **admin panel** to manage all content displayed in Mehran Univer
 ## 🖼️ Screenshots  
 | Admin Dashboard | News Management | Event Upload |  
 |-----------------|-----------------|------------------|  
-| ![Dashboard]([https://via.placeholder.com/300](https://drive.google.com/file/d/1O41blzy09AdHUyvESQZjzmo-F_f6kNck/view?usp=drive_link)) | ![News]([https://via.placeholder.com/300](https://drive.google.com/file/d/17OjQRbtfoN0LpvJQkhXN64ll_M-IFzes/view?usp=drive_link)) | ![Events](https://drive.google.com/file/d/1ibbuakOtBDdPWhApGp1wVynuKTVpvFN7/view?usp=drive_link) |  
+| ![Dashboard](assets/images/Dashboard_SS.png) | ![News](assets/images/News_SS.png) | ![Timetable](assets/images/Events_SS.png) |  
 
 ---
 
